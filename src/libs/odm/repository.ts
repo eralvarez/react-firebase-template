@@ -13,6 +13,7 @@ import {
   updateDoc,
   deleteDoc,
   type CollectionReference,
+  Timestamp,
 } from 'firebase/firestore';
 import {
   getModelFields,
@@ -56,6 +57,25 @@ export class Repository<T> {
   }
 
   /**
+   * Convert Firestore Timestamp objects to JavaScript Date objects
+   */
+  private convertTimestamps(data: any): any {
+    const fields = getModelFields(this.modelClass);
+    const result = { ...data };
+
+    for (const [fieldName, metadata] of fields) {
+      if (metadata.type === 'timestamp' && result[fieldName]) {
+        // Convert Firestore Timestamp to Date
+        if (result[fieldName] instanceof Timestamp) {
+          result[fieldName] = result[fieldName].toDate();
+        }
+      }
+    }
+
+    return result;
+  }
+
+  /**
    * Create a new document
    */
   async create(data: CreateInput<T>, options?: CrudOptions): Promise<T & { id: string }> {
@@ -92,8 +112,9 @@ export class Repository<T> {
         return null;
       }
 
+      const data = this.convertTimestamps(docSnap.data());
       const result = {
-        ...docSnap.data(),
+        ...data,
         id: docSnap.id,
       } as T & { id: string };
 
@@ -113,8 +134,9 @@ export class Repository<T> {
       const results: (T & { id: string })[] = [];
 
       for (const docSnap of querySnapshot.docs) {
+        const data = this.convertTimestamps(docSnap.data());
         const result = {
-          ...docSnap.data(),
+          ...data,
           id: docSnap.id,
         } as T & { id: string };
 

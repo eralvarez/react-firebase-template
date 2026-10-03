@@ -221,6 +221,22 @@ products.forEach(p => {
 });
 ```
 
+**Automatic Timestamp Conversion** - All timestamp fields are automatically converted from Firestore Timestamp objects to JavaScript Date objects:
+
+```typescript
+const product = await productRepository.get('product-id');
+
+// createdAt and updatedAt are JavaScript Date objects
+console.log(product.createdAt instanceof Date); // true
+console.log(product.createdAt.toISOString()); // "2024-01-15T10:30:00.000Z"
+
+// Works with getAll() too
+const products = await productRepository.getAll();
+products.forEach(p => {
+  console.log(p.updatedAt instanceof Date); // true
+});
+```
+
 ### Update
 
 Update specific fields in a document.
