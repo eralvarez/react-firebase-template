@@ -1,22 +1,40 @@
+// Variables
+$accent-color: var(--accent);
+$accent-bg-color: var(--accent-bg);
+$accent-border-color: var(--accent-border);
+$border-color: var(--border);
+$social-bg-color: var(--social-bg);
+$text-heading: var(--text-h);
+
+// Mixins
+@mixin media-tablet {
+  @media (max-width: 1024px) {
+    @content;
+  }
+}
+
+// Counter button styles
 .counter {
   font-size: 16px;
   padding: 5px 10px;
   border-radius: 5px;
-  color: var(--accent);
-  background: var(--accent-bg);
+  color: $accent-color;
+  background: $accent-bg-color;
   border: 2px solid transparent;
   transition: border-color 0.3s;
   margin-bottom: 24px;
 
   &:hover {
-    border-color: var(--accent-border);
+    border-color: $accent-border-color;
   }
+
   &:focus-visible {
-    outline: 2px solid var(--accent);
+    outline: 2px solid $accent-color;
     outline-offset: 2px;
   }
 }
 
+// Hero section with logo animations
 .hero {
   position: relative;
 
@@ -42,8 +60,7 @@
     z-index: 1;
     top: 34px;
     height: 28px;
-    transform: perspective(2000px) rotateZ(300deg) rotateX(44deg) rotateY(39deg)
-      scale(1.4);
+    transform: perspective(2000px) rotateZ(300deg) rotateX(44deg) rotateY(39deg) scale(1.4);
   }
 
   .vite {
@@ -51,11 +68,11 @@
     top: 107px;
     height: 26px;
     width: auto;
-    transform: perspective(2000px) rotateZ(300deg) rotateX(40deg) rotateY(39deg)
-      scale(0.8);
+    transform: perspective(2000px) rotateZ(300deg) rotateX(40deg) rotateY(39deg) scale(0.8);
   }
 }
 
+// Center content layout
 #center {
   display: flex;
   flex-direction: column;
@@ -64,21 +81,23 @@
   place-items: center;
   flex-grow: 1;
 
-  @media (max-width: 1024px) {
+  @include media-tablet {
     padding: 32px 20px 24px;
     gap: 18px;
   }
 }
 
+// Next steps section
 #next-steps {
   display: flex;
-  border-top: 1px solid var(--border);
+  border-top: 1px solid $border-color;
   text-align: left;
 
   & > div {
     flex: 1 1 0;
     padding: 32px;
-    @media (max-width: 1024px) {
+
+    @include media-tablet {
       padding: 24px 20px;
     }
   }
@@ -89,21 +108,23 @@
     height: 22px;
   }
 
-  @media (max-width: 1024px) {
+  @include media-tablet {
     flex-direction: column;
     text-align: center;
   }
 }
 
+// Documentation section
 #docs {
-  border-right: 1px solid var(--border);
+  border-right: 1px solid $border-color;
 
-  @media (max-width: 1024px) {
+  @include media-tablet {
     border-right: none;
-    border-bottom: 1px solid var(--border);
+    border-bottom: 1px solid $border-color;
   }
 }
 
+// Next steps links
 #next-steps ul {
   list-style: none;
   padding: 0;
@@ -116,10 +137,10 @@
   }
 
   a {
-    color: var(--text-h);
+    color: $text-heading;
     font-size: 16px;
     border-radius: 6px;
-    background: var(--social-bg);
+    background: $social-bg-color;
     display: flex;
     padding: 6px 12px;
     align-items: center;
@@ -130,13 +151,14 @@
     &:hover {
       box-shadow: var(--shadow);
     }
+
     .button-icon {
       height: 18px;
       width: 18px;
     }
   }
 
-  @media (max-width: 1024px) {
+  @include media-tablet {
     margin-top: 20px;
     flex-wrap: wrap;
     justify-content: center;
@@ -153,14 +175,17 @@
   }
 }
 
+// Spacer section
 #spacer {
   height: 88px;
-  border-top: 1px solid var(--border);
-  @media (max-width: 1024px) {
+  border-top: 1px solid $border-color;
+
+  @include media-tablet {
     height: 48px;
   }
 }
 
+// Decorative ticks
 .ticks {
   position: relative;
   width: 100%;
@@ -175,10 +200,11 @@
 
   &::before {
     left: 0;
-    border-left-color: var(--border);
+    border-left-color: $border-color;
   }
+
   &::after {
     right: 0;
-    border-right-color: var(--border);
+    border-right-color: $border-color;
   }
 }

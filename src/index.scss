@@ -1,3 +1,11 @@
+// Mixin for tablet media queries
+@mixin media-tablet {
+  @media (max-width: 1024px) {
+    @content;
+  }
+}
+
+// CSS custom properties and root styles
 :root {
   --text: #6b6375;
   --text-h: #08060d;
@@ -8,8 +16,7 @@
   --accent-bg: rgba(170, 59, 255, 0.1);
   --accent-border: rgba(170, 59, 255, 0.5);
   --social-bg: rgba(244, 243, 236, 0.5);
-  --shadow:
-    rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
+  --shadow: rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
 
   --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
   --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
@@ -25,11 +32,12 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
-  @media (max-width: 1024px) {
+  @include media-tablet {
     font-size: 16px;
   }
 }
 
+// Dark mode styles
 @media (prefers-color-scheme: dark) {
   :root {
     --text: #9ca3af;
@@ -41,8 +49,7 @@
     --accent-bg: rgba(192, 132, 252, 0.15);
     --accent-border: rgba(192, 132, 252, 0.5);
     --social-bg: rgba(47, 48, 58, 0.5);
-    --shadow:
-      rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
+    --shadow: rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
   }
 
   #social .button-icon {
@@ -50,6 +57,7 @@
   }
 }
 
+// Root app container
 #root {
   width: 1126px;
   max-width: 100%;
@@ -62,6 +70,7 @@
   box-sizing: border-box;
 }
 
+// Global body and text styles
 body {
   margin: 0;
 }
@@ -77,24 +86,29 @@ h1 {
   font-size: 56px;
   letter-spacing: -1.68px;
   margin: 32px 0;
-  @media (max-width: 1024px) {
+
+  @include media-tablet {
     font-size: 36px;
     margin: 20px 0;
   }
 }
+
 h2 {
   font-size: 24px;
   line-height: 118%;
   letter-spacing: -0.24px;
   margin: 0 0 8px;
-  @media (max-width: 1024px) {
+
+  @include media-tablet {
     font-size: 20px;
   }
 }
+
 p {
   margin: 0;
 }
 
+// Code and counter styles
 code,
 .counter {
   font-family: var(--mono);

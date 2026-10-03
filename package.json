@@ -4,17 +4,27 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --port 3000",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "start": "serve -s dist -l 3000",
     "preview": "vite preview"
   },
   "dependencies": {
+    "@generouted/react-router": "^1.20.2",
+    "firebase": "^12.19.0",
+    "normalize.css": "^8.0.1",
     "react": "^19.2.8",
-    "react-dom": "^19.2.8"
+    "react-dom": "^19.2.8",
+    "react-router": "^8.4.0",
+    "serve": "^14.2.6",
+    "typesaurus": "^10.7.0"
   },
   "devDependencies": {
     "@babel/core": "^7.29.7",
+    "@babel/plugin-proposal-decorators": "^7.29.7",
     "@eslint/js": "^10.0.1",
     "@rolldown/plugin-babel": "^0.2.3",
     "@types/babel__core": "^7.20.5",
@@ -27,6 +37,9 @@
     "eslint-plugin-react-hooks": "^7.1.1",
     "eslint-plugin-react-refresh": "^0.5.6",
     "globals": "^17.12.0",
+    "prettier": "^3.9.9",
+    "sass": "^1.105.1",
+    "serve": "^14.2.5",
     "typescript": "~6.0.2",
     "typescript-eslint": "^8.69.0",
     "vite": "^8.3.0"
