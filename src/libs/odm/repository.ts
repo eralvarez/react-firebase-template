@@ -30,15 +30,29 @@ export class Repository<T> {
   private modelClass: new () => T;
   private collectionRef: CollectionReference;
   private parentPath: string | undefined;
+  private isFullPath: boolean;
 
-  constructor(db: Firestore, modelClass: new () => T, parentPath?: string) {
+  /**
+   * Constructor for creating a repository
+   * @param db Firestore instance
+   * @param modelClass The model class to use
+   * @param parentPath Parent path (document or full collection path)
+   * @param isFullPath If true, parentPath is the full collection path; if false, collection name is appended
+   */
+  constructor(
+    db: Firestore,
+    modelClass: new () => T,
+    parentPath?: string,
+    isFullPath: boolean = false
+  ) {
     this.db = db;
     this.modelClass = modelClass;
     this.parentPath = parentPath;
+    this.isFullPath = isFullPath;
 
     // Get collection path from model metadata
-    const collectionPath = getCollectionPath(modelClass, parentPath);
-    this.collectionRef = collection(db, collectionPath);
+    const collectionPath = isFullPath ? parentPath : getCollectionPath(modelClass, parentPath);
+    this.collectionRef = collection(db, collectionPath!);
   }
 
   /**
@@ -170,11 +184,17 @@ export class Repository<T> {
    */
   getSubCollection<U>(
     documentId: string,
-    _collectionName: string,
+    collectionName: string,
     subModelClass: new () => U
   ): Repository<U> {
-    const parentPath = `${getCollectionPath(this.modelClass, this.parentPath)}/${documentId}`;
-    return new Repository<U>(this.db, subModelClass, parentPath);
+    // Build the full path: parent/collection/documentId/subCollectionName
+    const basePath = this.isFullPath
+      ? this.parentPath
+      : getCollectionPath(this.modelClass, this.parentPath);
+    const fullPath = `${basePath}/${documentId}/${collectionName}`;
+    
+    // Create repository with full path flag set to true so it uses the path as-is
+    return new Repository<U>(this.db, subModelClass, fullPath, true);
   }
 
   /**

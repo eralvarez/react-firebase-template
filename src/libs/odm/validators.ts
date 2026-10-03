@@ -21,7 +21,7 @@ export function validateField<T>(
   }
 
   // Check required
-  if (metadata.required && (value === undefined || value === null || value === '')) {
+  if (metadata.required && (value === undefined || value === null)) {
     throw new ValidationError(fieldName, `is required`);
   }
 

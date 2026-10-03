@@ -3,7 +3,7 @@ import { storeRepository } from '../../libs/db';
 export default function StoreHome() {
   const handleCreateStore = async () => {
     try {
-      const store = await storeRepository.create({ name: 'Oxxo2' });
+      const store = await storeRepository.create({ name: 'Oxxo3' });
       const productRepo = store.products;
 
       if (productRepo) {
@@ -16,6 +16,15 @@ export default function StoreHome() {
     }
   };
 
+  const getStores = async () => {
+    try {
+      const stores = await storeRepository.getAll();
+      console.log('Stores:', stores);
+    } catch (error) {
+      console.error('Error fetching stores:', error);
+    }
+  };
+
   return (
     <>
       <h1>Store</h1>
@@ -23,6 +32,9 @@ export default function StoreHome() {
 
       <button type="button" onClick={handleCreateStore}>
         Click me
+      </button>
+      <button type="button" onClick={getStores}>
+        Get Stores
       </button>
     </>
   );
