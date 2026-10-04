@@ -80,6 +80,7 @@ export class Repository<T> {
    * Sources for defaults (in priority order):
    * 1. Class attribute defaults (name: string = '') - highest priority
    * 2. @Field({ default: ... }) metadata - fallback
+   * 3. null for optional fields without defaults
    * Note: Only fields with @Field decorator are processed
    */
   private applyDefaults(data: any): any {
@@ -120,6 +121,10 @@ export class Repository<T> {
         result[fieldName] =
           typeof metadata.default === 'function' ? metadata.default() : metadata.default;
       }
+      // Priority 3: Set null for optional fields without defaults
+      else if (!metadata.required) {
+        result[fieldName] = null;
+      }
     }
 
     return result;
@@ -137,13 +142,15 @@ export class Repository<T> {
     const now = new Date();
     const processedData = this.processAutoFields(data as any, true, now);
 
+    // Apply defaults before saving
+    const dataWithDefaults = this.applyDefaults(processedData);
+
     // Add to Firestore
-    const docRef = await addDoc(this.collectionRef, processedData);
+    const docRef = await addDoc(this.collectionRef, dataWithDefaults);
 
     // Return with ID and initialized sub-collections
     const result = {
-      ...(data as any),
-      ...processedData,
+      ...dataWithDefaults,
       id: docRef.id,
     } as T & { id: string };
 
