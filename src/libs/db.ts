@@ -18,11 +18,14 @@ export class Store {
   @Field()
   description?: string;
 
-  @Field({ type: 'boolean' })
+  @Field({ type: 'boolean', default: false })
   isOpen?: boolean;
 
-  @Field({ type: 'number', default: 10 })
+  @Field({ type: 'number', default: 0 })
   rating?: number;
+
+  @Field()
+  status?: string = 'active';
 
   @Field({ type: 'timestamp', readonly: true, auto: true })
   createdAt?: Date;

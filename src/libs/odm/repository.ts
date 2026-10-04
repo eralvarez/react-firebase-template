@@ -77,17 +77,47 @@ export class Repository<T> {
 
   /**
    * Apply default values for missing fields
+   * Sources for defaults (in priority order):
+   * 1. @Field({ default: ... }) metadata (most explicit)
+   * 2. Class attribute defaults (name: string = '')
    */
   private applyDefaults(data: any): any {
     const fields = getModelFields(this.modelClass);
     const result = { ...data };
 
+    // Get class attribute defaults by instantiating the model
+    let classDefaults: any = {};
+    try {
+      const instance = new this.modelClass();
+      classDefaults = instance as any;
+    } catch (error) {
+      // If instantiation fails, we'll just use field metadata defaults
+      // This can happen if the class requires constructor parameters
+    }
+
     for (const [fieldName, metadata] of fields) {
-      // Apply default if field is missing and default is defined
-      if (result[fieldName] === undefined && metadata.default !== undefined) {
-        // Handle function defaults
+      // Skip if field already has a value
+      if (result[fieldName] !== undefined) {
+        continue;
+      }
+
+      // Priority 1: Use @Field({ default: ... }) if specified
+      if (metadata.default !== undefined) {
         result[fieldName] =
           typeof metadata.default === 'function' ? metadata.default() : metadata.default;
+      }
+      // Priority 2: Use class attribute default if available
+      else if (classDefaults[fieldName] !== undefined) {
+        // For objects and arrays, we need to be careful about references
+        // If it's an object/array, create a new instance to avoid shared state
+        const defaultValue = classDefaults[fieldName];
+        if (Array.isArray(defaultValue)) {
+          result[fieldName] = [...defaultValue];
+        } else if (defaultValue !== null && typeof defaultValue === 'object') {
+          result[fieldName] = { ...defaultValue };
+        } else {
+          result[fieldName] = defaultValue;
+        }
       }
     }
 
