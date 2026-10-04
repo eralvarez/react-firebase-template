@@ -16,7 +16,7 @@ export class Store {
   name: string = '';
 
   @Field()
-  description?: string;
+  description?: string = '';
 
   @Field({ type: 'boolean', default: false })
   isOpen?: boolean;
@@ -24,8 +24,8 @@ export class Store {
   @Field({ type: 'number', default: 0 })
   rating?: number;
 
-  @Field()
-  status?: string = 'active';
+  @Field({ type: 'string', default: 'inactive' })
+  status?: string;
 
   @Field({ type: 'timestamp', readonly: true, auto: true })
   createdAt?: Date;

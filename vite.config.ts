@@ -9,7 +9,10 @@ export default defineConfig({
     react(),
     babel({
       presets: [reactCompilerPreset()],
-      plugins: [['@babel/plugin-proposal-decorators', { legacy: true }]],
+      plugins: [
+        ['@babel/plugin-proposal-decorators', { legacy: true }],
+        ['@babel/plugin-transform-class-properties', { loose: true }],
+      ],
     }),
     generouted(),
   ],

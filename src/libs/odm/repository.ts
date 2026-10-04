@@ -92,6 +92,7 @@ export class Repository<T> {
     try {
       const instance = new this.modelClass();
       classDefaults = instance as any;
+      // console.log('classDefaults after instantiation:', classDefaults);
     } catch (error) {
       // If instantiation fails, we'll just use field metadata defaults
       // This can happen if the class requires constructor parameters
