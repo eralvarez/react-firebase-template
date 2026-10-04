@@ -78,8 +78,9 @@ export class Repository<T> {
   /**
    * Apply default values for missing fields
    * Sources for defaults (in priority order):
-   * 1. @Field({ default: ... }) metadata (most explicit)
-   * 2. Class attribute defaults (name: string = '')
+   * 1. Class attribute defaults (name: string = '') - highest priority
+   * 2. @Field({ default: ... }) metadata - fallback
+   * Note: Only fields with @Field decorator are processed
    */
   private applyDefaults(data: any): any {
     const fields = getModelFields(this.modelClass);
@@ -101,13 +102,8 @@ export class Repository<T> {
         continue;
       }
 
-      // Priority 1: Use @Field({ default: ... }) if specified
-      if (metadata.default !== undefined) {
-        result[fieldName] =
-          typeof metadata.default === 'function' ? metadata.default() : metadata.default;
-      }
-      // Priority 2: Use class attribute default if available
-      else if (classDefaults[fieldName] !== undefined) {
+      // Priority 1: Use class attribute default if available (highest priority)
+      if (classDefaults[fieldName] !== undefined) {
         // For objects and arrays, we need to be careful about references
         // If it's an object/array, create a new instance to avoid shared state
         const defaultValue = classDefaults[fieldName];
@@ -118,6 +114,11 @@ export class Repository<T> {
         } else {
           result[fieldName] = defaultValue;
         }
+      }
+      // Priority 2: Use @Field({ default: ... }) if specified (fallback)
+      else if (metadata.default !== undefined) {
+        result[fieldName] =
+          typeof metadata.default === 'function' ? metadata.default() : metadata.default;
       }
     }
 
