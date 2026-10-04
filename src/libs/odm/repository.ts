@@ -76,6 +76,25 @@ export class Repository<T> {
   }
 
   /**
+   * Apply default values for missing fields
+   */
+  private applyDefaults(data: any): any {
+    const fields = getModelFields(this.modelClass);
+    const result = { ...data };
+
+    for (const [fieldName, metadata] of fields) {
+      // Apply default if field is missing and default is defined
+      if (result[fieldName] === undefined && metadata.default !== undefined) {
+        // Handle function defaults
+        result[fieldName] =
+          typeof metadata.default === 'function' ? metadata.default() : metadata.default;
+      }
+    }
+
+    return result;
+  }
+
+  /**
    * Create a new document
    */
   async create(data: CreateInput<T>, options?: CrudOptions): Promise<T & { id: string }> {
@@ -113,8 +132,9 @@ export class Repository<T> {
       }
 
       const data = this.convertTimestamps(docSnap.data());
+      const dataWithDefaults = this.applyDefaults(data);
       const result = {
-        ...data,
+        ...dataWithDefaults,
         id: docSnap.id,
       } as T & { id: string };
 
@@ -135,8 +155,9 @@ export class Repository<T> {
 
       for (const docSnap of querySnapshot.docs) {
         const data = this.convertTimestamps(docSnap.data());
+        const dataWithDefaults = this.applyDefaults(data);
         const result = {
-          ...data,
+          ...dataWithDefaults,
           id: docSnap.id,
         } as T & { id: string };
 

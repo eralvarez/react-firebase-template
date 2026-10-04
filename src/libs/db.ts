@@ -18,6 +18,12 @@ export class Store {
   @Field()
   description?: string;
 
+  @Field({ type: 'boolean' })
+  isOpen?: boolean;
+
+  @Field({ type: 'number', default: 10 })
+  rating?: number;
+
   @Field({ type: 'timestamp', readonly: true, auto: true })
   createdAt?: Date;
 
@@ -25,7 +31,7 @@ export class Store {
   updatedAt?: Date;
 
   @SubCollection('products')
-  products?: Repository<Product>;
+  productsRepo?: Repository<Product>;
 }
 
 @Model
@@ -56,4 +62,4 @@ class Product {
 // REPOSITORIES
 // ============================================================================
 
-    export const storeRepository = new Repository<Store>(db, Store);
+export const storeRepository = new Repository<Store>(db, Store);

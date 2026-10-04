@@ -4,7 +4,7 @@ export default function StoreHome() {
   const handleCreateStore = async () => {
     try {
       const store = await storeRepository.create({ name: 'Oxxo3' });
-      const productRepo = store.products;
+      const productRepo = store.productsRepo;
 
       if (productRepo) {
         // You can now use the product repository to create products
@@ -20,6 +20,14 @@ export default function StoreHome() {
     try {
       const stores = await storeRepository.getAll();
       console.log('Stores:', stores);
+
+      for (const store of stores) {
+        const storeProductRepo = store.productsRepo;
+        if (storeProductRepo) {
+          const products = await storeProductRepo.getAll();
+          console.log(`Products for store ${store.id}:`, products);
+        }
+      }
     } catch (error) {
       console.error('Error fetching stores:', error);
     }
