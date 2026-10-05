@@ -1,9 +1,9 @@
-import { storeRepository } from '../../libs/db';
+import { storeRepository } from 'libs/db';
 
 export default function StoreHome() {
   const handleCreateStore = async () => {
     try {
-      const store = await storeRepository.create({ name: 'Oxxo3' });
+      const store = await storeRepository.create({ name: 'Oxxo' });
       const productRepo = store.productsRepo;
 
       if (productRepo) {

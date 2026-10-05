@@ -1,7 +1,7 @@
 import { db } from './firebase';
 
 // ODM decorators and repository
-import { Model, Collection, Field, SubCollection, Repository } from './odm';
+import { Model, Collection, Field, SubCollection, Repository } from 'libs/firetools/odm';
 
 // ============================================================================
 // DATABASE MODELS

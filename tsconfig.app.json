@@ -22,7 +22,10 @@
 
     /* Path aliases */
     "ignoreDeprecations": "6.0",
-    "baseUrl": "./src",
+    "baseUrl": ".",
+    "paths": {
+      "*": ["src/*"]
+    },
 
     /* Linting */
     "noUnusedLocals": true,
