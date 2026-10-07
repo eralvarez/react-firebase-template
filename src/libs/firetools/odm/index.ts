@@ -22,6 +22,9 @@ export type {
   Partial,
   Omit,
   RepositoryResult,
+  FirestoreOperator,
+  WhereCondition,
+  QueryOptions,
 } from './types';
 
 // Validation

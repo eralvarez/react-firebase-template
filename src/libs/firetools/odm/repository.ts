@@ -12,7 +12,12 @@ import {
   getDocs,
   updateDoc,
   deleteDoc,
+  query,
+  where,
+  orderBy,
+  limit,
   type CollectionReference,
+  type Query,
   Timestamp,
 } from 'firebase/firestore';
 import {
@@ -21,7 +26,7 @@ import {
   getModelSubCollections,
 } from './metadata';
 import { validateObject } from './validators';
-import type { CreateInput, UpdateInput, CrudOptions } from './types';
+import type { CreateInput, UpdateInput, CrudOptions, QueryOptions } from './types';
 
 /**
  * Generic Repository for Firestore collections
@@ -185,11 +190,12 @@ export class Repository<T> {
   }
 
   /**
-   * Get all documents in the collection
+   * Get all documents in the collection with optional filtering, ordering, and pagination
    */
-  async getAll(): Promise<(T & { id: string })[]> {
+  async getAll(options?: QueryOptions<T>): Promise<(T & { id: string })[]> {
     try {
-      const querySnapshot = await getDocs(this.collectionRef);
+      const q = options ? this.buildQuery(options) : this.collectionRef;
+      const querySnapshot = await getDocs(q);
       const results: (T & { id: string })[] = [];
 
       for (const docSnap of querySnapshot.docs) {
@@ -208,6 +214,39 @@ export class Repository<T> {
       console.error('Error getting all documents:', error);
       return [];
     }
+  }
+
+  /**
+   * Build a Firestore Query from QueryOptions
+   */
+  private buildQuery(options: QueryOptions<T>): Query {
+    const constraints: any[] = [];
+
+    // Add where conditions
+    if (options.where) {
+      const conditions = Array.isArray(options.where) ? options.where : [options.where];
+      
+      for (const condition of conditions) {
+        const fieldName = String(condition.field);
+        // ponytail: Firebase doesn't support OR in constraints directly; all are AND'd by Firestore
+        constraints.push(where(fieldName, condition.operator as any, condition.value));
+      }
+    }
+
+    // Add ordering
+    if (options.orderBy) {
+      for (const order of options.orderBy) {
+        const fieldName = String(order.field);
+        constraints.push(orderBy(fieldName, order.direction));
+      }
+    }
+
+    // Add pagination
+    if (options.limit !== undefined) {
+      constraints.push(limit(options.limit));
+    }
+
+    return query(this.collectionRef, ...constraints);
   }
 
   /**

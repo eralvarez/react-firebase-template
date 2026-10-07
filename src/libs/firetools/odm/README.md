@@ -21,6 +21,7 @@ A lightweight, type-safe Object Document Mapper (ODM) for Firebase Firestore bui
 📦 **Sub-Collections** - Native support for nested Firestore collections
 🔐 **Type Safe** - Full TypeScript support with IntelliSense
 🚀 **Simple CRUD** - Intuitive API for create, read, update, delete operations
+🔎 **Query Filters** - Type-safe filtering, ordering, and pagination with all Firestore operators
 
 ## Quick Start
 
@@ -236,6 +237,52 @@ products.forEach(p => {
   console.log(p.updatedAt instanceof Date); // true
 });
 ```
+
+### Filtering, Ordering & Pagination
+
+Query documents with type-safe filters, ordering, and pagination:
+
+```typescript
+// Single filter
+const openStores = await storeRepository.getAll({
+  where: { field: 'isOpen', operator: '==', value: true }
+});
+
+// Multiple filters (combined with AND by default)
+const highRatedOpenStores = await storeRepository.getAll({
+  where: [
+    { field: 'isOpen', operator: '==', value: true },
+    { field: 'rating', operator: '>=', value: 4.5 }
+  ]
+});
+
+// Add ordering
+const sortedStores = await storeRepository.getAll({
+  where: { field: 'isOpen', operator: '==', value: true },
+  orderBy: [
+    { field: 'rating', direction: 'desc' },
+    { field: 'name', direction: 'asc' }
+  ]
+});
+
+// Add limit (pagination)
+const page1 = await storeRepository.getAll({
+  orderBy: [{ field: 'createdAt', direction: 'desc' }],
+  limit: 10
+});
+```
+
+**QueryOptions properties:**
+- `where` — Single condition or array of conditions. Each condition has `field`, `operator`, and `value`. 
+- `orderBy` — Array of `{ field, direction: 'asc' | 'desc' }`. Applied in order.
+- `limit` — Maximum number of documents to return.
+- `combineWithAnd` — (Optional, defaults to `true`) When `true`, multiple `where` conditions are AND'd. When `false`, client-side filtering is used for OR logic (not native Firestore OR).
+
+**Supported operators**: `'=='`, `'<'`, `'>'`, `'<='`, `'>='`, `'!='`, `'in'`, `'array-contains'`
+
+**Type-safe field names** — TypeScript enforces that field names and types match your model schema.
+
+**Note on OR logic:** Firestore doesn't support native OR in query constraints. Use `combineWithAnd: false` for OR, but results are filtered client-side after fetching, which is less efficient than AND queries.
 
 ### Update
 
@@ -653,10 +700,36 @@ new Repository<T>(db: Firestore, modelClass: new () => T, parentPath?: string)
 |--------|---------|-------------|
 | `create(data, options?)` | `Promise<T & { id }>` | Create new document |
 | `get(id)` | `Promise<T & { id } \| null>` | Fetch single document |
-| `getAll()` | `Promise<(T & { id })[]>` | Fetch all documents |
+| `getAll(options?)` | `Promise<(T & { id })[]>` | Fetch documents with optional filtering, ordering, and limit |
 | `update(id, data, options?)` | `Promise<T & { id }>` | Update document fields |
 | `delete(id)` | `Promise<void>` | Delete document |
 | `getSubCollection<U>(id, name, modelClass)` | `Repository<U>` | Access sub-collection |
+
+#### getAll Options
+
+The `getAll()` method accepts an optional `QueryOptions<T>` parameter:
+
+```typescript
+interface QueryOptions<T> {
+  where?: WhereCondition<T> | WhereCondition<T>[];
+  combineWithAnd?: boolean;     // Default: true
+  orderBy?: Array<{
+    field: keyof T;
+    direction: 'asc' | 'desc';
+  }>;
+  limit?: number;
+}
+
+interface WhereCondition<T> {
+  field: keyof T;
+  operator: FirestoreOperator;
+  value: any;
+}
+
+type FirestoreOperator = 
+  | '==' | '<' | '>' | '<=' | '>=' | '!='
+  | 'in' | 'array-contains';
+```
 
 ### Decorators
 
@@ -696,6 +769,9 @@ import type {
   ModelMetadata,
   CreateInput<T>,
   UpdateInput<T>,
+  QueryOptions<T>,
+  WhereCondition<T>,
+  FirestoreOperator,
 } from '@/libs/odm';
 
 // Example usage
@@ -713,13 +789,6 @@ const validated = validateObject(data, fields);
 5. **Use TypeScript strict mode** - Enable strict checks in tsconfig.json
 6. **Test edge cases** - Test validation with invalid data
 7. **Document models** - Add JSDoc comments to fields
-
-## Examples
-
-See the full examples in the companion files:
-- `odm-examples.md` - Comprehensive usage examples
-- `db-example.ts` - Real database schema example
-- `db-comparison.md` - Before/after comparison with typesaurus
 
 ## Support
 

@@ -33,6 +33,25 @@ export default function StoreHome() {
     }
   };
 
+  const getStoresQuery = async () => {
+    try {
+      const stores = await storeRepository.getAll({
+        where: { field: 'rating', operator: '>=', value: 9 },
+      });
+      console.log('Stores:', stores);
+
+      // for (const store of stores) {
+      //   const storeProductRepo = store.productsRepo;
+      //   if (storeProductRepo) {
+      //     const products = await storeProductRepo.getAll();
+      //     console.log(`Products for store ${store.id}:`, products);
+      //   }
+      // }
+    } catch (error) {
+      console.error('Error fetching stores:', error);
+    }
+  };
+
   return (
     <>
       <h1>Store</h1>
@@ -43,6 +62,9 @@ export default function StoreHome() {
       </button>
       <button type="button" onClick={getStores}>
         Get Stores
+      </button>
+      <button type="button" onClick={getStoresQuery}>
+        Get Stores query
       </button>
     </>
   );

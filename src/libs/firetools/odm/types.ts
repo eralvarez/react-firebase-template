@@ -139,3 +139,37 @@ export type CreateInput<T> = Omit<T, 'id' | 'createdAt' | 'updatedAt'>;
  * Update input type (all fields optional except constraints)
  */
 export type UpdateInput<T> = Partial<Omit<T, 'id' | 'createdAt' | 'updatedAt'>>;
+
+/**
+ * Firestore query operators
+ */
+export type FirestoreOperator = '==' | '<' | '>' | '<=' | '>=' | '!=' | 'in' | 'array-contains';
+
+/**
+ * Where condition for filters (single condition)
+ */
+export interface WhereCondition<T> {
+  field: keyof T;
+  operator: FirestoreOperator;
+  value: any;
+}
+
+/**
+ * Query options for getAll with filtering, ordering, and pagination
+ */
+export interface QueryOptions<T> {
+  /** Where conditions: single condition or array of conditions */
+  where?: WhereCondition<T> | WhereCondition<T>[];
+  
+  /** Combine multiple where conditions with AND (true) or OR (false). Default: true */
+  combineWithAnd?: boolean;
+  
+  /** Order by field and direction */
+  orderBy?: Array<{
+    field: keyof T;
+    direction: 'asc' | 'desc';
+  }>;
+  
+  /** Maximum number of documents to return */
+  limit?: number;
+}
