@@ -7,7 +7,7 @@
 export { Model, Collection, Field, SubCollection, Required, ReadOnly, FieldBuilder } from './decorators';
 
 // Core Repository
-export { Repository, createRepository } from './repository';
+export { Repository, createRepository, type Result } from './repository';
 
 // Type definitions
 export type {

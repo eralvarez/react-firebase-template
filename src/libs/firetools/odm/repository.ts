@@ -29,6 +29,14 @@ import { validateObject } from './validators';
 import type { CreateInput, UpdateInput, CrudOptions, QueryOptions } from './types';
 
 /**
+ * Standard result type for all CRUD operations
+ */
+export type Result<T> = {
+  data: T | null;
+  error: Error | null;
+};
+
+/**
  * Generic Repository for Firestore collections
  */
 export class Repository<T> {
@@ -98,7 +106,7 @@ export class Repository<T> {
       const instance = new this.modelClass();
       classDefaults = instance as any;
       // console.log('classDefaults after instantiation:', classDefaults);
-    } catch (error) {
+    } catch {
       // If instantiation fails, we'll just use field metadata defaults
       // This can happen if the class requires constructor parameters
     }
@@ -139,40 +147,53 @@ export class Repository<T> {
   /**
    * Create a new document
    */
-  async create(data: CreateInput<T>, options?: CrudOptions): Promise<T & { id: string }> {
-    // Validate the data
-    const fields = getModelFields(this.modelClass);
-    validateObject(data, fields, options?.skipValidation);
+  async create(data: CreateInput<T>, options?: CrudOptions): Promise<Result<T & { id: string }>> {
+    try {
+      // Validate the data
+      const fields = getModelFields(this.modelClass);
+      validateObject(data, fields, options?.skipValidation);
 
-    // Add auto-fields (createdAt, updatedAt)
-    const now = new Date();
-    const processedData = this.processAutoFields(data as any, true, now);
+      // Add auto-fields (createdAt, updatedAt)
+      const now = new Date();
+      const processedData = this.processAutoFields(data as any, true, now);
 
-    // Apply defaults before saving
-    const dataWithDefaults = this.applyDefaults(processedData);
+      // Apply defaults before saving
+      const dataWithDefaults = this.applyDefaults(processedData);
 
-    // Add to Firestore
-    const docRef = await addDoc(this.collectionRef, dataWithDefaults);
+      // Add to Firestore
+      const docRef = await addDoc(this.collectionRef, dataWithDefaults);
 
-    // Return with ID and initialized sub-collections
-    const result = {
-      ...dataWithDefaults,
-      id: docRef.id,
-    } as T & { id: string };
+      // Return with ID and initialized sub-collections
+      const result = {
+        ...dataWithDefaults,
+        id: docRef.id,
+      } as T & { id: string };
 
-    return this.initializeSubCollections(result);
+      return {
+        data: this.initializeSubCollections(result),
+        error: null,
+      };
+    } catch (error) {
+      return {
+        data: null,
+        error: error instanceof Error ? error : new Error(String(error)),
+      };
+    }
   }
 
   /**
    * Read a document by ID
    */
-  async get(id: string): Promise<(T & { id: string }) | null> {
+  async get(id: string): Promise<Result<T & { id: string }>> {
     try {
       const docRef = doc(this.collectionRef, id);
       const docSnap = await getDoc(docRef);
 
       if (!docSnap.exists()) {
-        return null;
+        return {
+          data: null,
+          error: null,
+        };
       }
 
       const data = this.convertTimestamps(docSnap.data());
@@ -182,17 +203,22 @@ export class Repository<T> {
         id: docSnap.id,
       } as T & { id: string };
 
-      return this.initializeSubCollections(result);
+      return {
+        data: this.initializeSubCollections(result),
+        error: null,
+      };
     } catch (error) {
-      console.error(`Error getting document ${id}:`, error);
-      return null;
+      return {
+        data: null,
+        error: error instanceof Error ? error : new Error(String(error)),
+      };
     }
   }
 
   /**
    * Get all documents in the collection with optional filtering, ordering, and pagination
    */
-  async getAll(options?: QueryOptions<T>): Promise<(T & { id: string })[]> {
+  async getAll(options?: QueryOptions<T>): Promise<Result<(T & { id: string })[]>> {
     try {
       const q = options ? this.buildQuery(options) : this.collectionRef;
       const querySnapshot = await getDocs(q);
@@ -209,10 +235,15 @@ export class Repository<T> {
         results.push(this.initializeSubCollections(result));
       }
 
-      return results;
+      return {
+        data: results,
+        error: null,
+      };
     } catch (error) {
-      console.error('Error getting all documents:', error);
-      return [];
+      return {
+        data: null,
+        error: error instanceof Error ? error : new Error(String(error)),
+      };
     }
   }
 
@@ -256,47 +287,68 @@ export class Repository<T> {
     id: string,
     data: UpdateInput<T>,
     options?: CrudOptions
-  ): Promise<T & { id: string }> {
-    // Get existing document to merge
-    const existing = await this.get(id);
-    if (!existing) {
-      throw new Error(`Document with id ${id} not found`);
+  ): Promise<Result<T & { id: string }>> {
+    try {
+      // Get existing document to merge
+      const getResult = await this.get(id);
+      if (getResult.error || !getResult.data) {
+        return {
+          data: null,
+          error: getResult.error || new Error(`Document with id ${id} not found`),
+        };
+      }
+
+      const existing = getResult.data;
+
+      // Validate the update data
+      const fields = getModelFields(this.modelClass);
+      validateObject(data, fields, options?.skipValidation);
+
+      // Prevent updating read-only fields
+      const processedData = this.preventReadOnlyUpdates(data as any, fields);
+
+      // Add updated timestamp
+      const now = new Date();
+      processedData.updatedAt = now;
+
+      // Update in Firestore
+      const docRef = doc(this.collectionRef, id);
+      await updateDoc(docRef, processedData);
+
+      // Return merged result
+      const result = {
+        ...existing,
+        ...processedData,
+      } as T & { id: string };
+
+      return {
+        data: this.initializeSubCollections(result),
+        error: null,
+      };
+    } catch (error) {
+      return {
+        data: null,
+        error: error instanceof Error ? error : new Error(String(error)),
+      };
     }
-
-    // Validate the update data
-    const fields = getModelFields(this.modelClass);
-    validateObject(data, fields, options?.skipValidation);
-
-    // Prevent updating read-only fields
-    const processedData = this.preventReadOnlyUpdates(data as any, fields);
-
-    // Add updated timestamp
-    const now = new Date();
-    processedData.updatedAt = now;
-
-    // Update in Firestore
-    const docRef = doc(this.collectionRef, id);
-    await updateDoc(docRef, processedData);
-
-    // Return merged result
-    const result = {
-      ...existing,
-      ...processedData,
-    } as T & { id: string };
-
-    return this.initializeSubCollections(result);
   }
 
   /**
    * Delete a document
    */
-  async delete(id: string): Promise<void> {
+  async delete(id: string): Promise<Result<void>> {
     try {
       const docRef = doc(this.collectionRef, id);
       await deleteDoc(docRef);
+      return {
+        data: undefined as any,
+        error: null,
+      };
     } catch (error) {
-      console.error(`Error deleting document ${id}:`, error);
-      throw error;
+      return {
+        data: null as any,
+        error: error instanceof Error ? error : new Error(String(error)),
+      };
     }
   }
 

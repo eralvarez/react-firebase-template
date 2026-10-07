@@ -2,54 +2,68 @@ import { storeRepository } from 'libs/db';
 
 export default function StoreHome() {
   const handleCreateStore = async () => {
-    try {
-      const store = await storeRepository.create({ name: 'Oxxo' });
+    const { data: store, error } = await storeRepository.create({ name: 'Oxxo' });
+    if (error) {
+      console.error('Error creating store:', error);
+      return;
+    }
+
+    if (store) {
       const productRepo = store.productsRepo;
 
       if (productRepo) {
         // You can now use the product repository to create products
-        await productRepo.create({ name: 'Sample Product', price: 10 });
+        const { error: createError } = await productRepo.create({ name: 'Sample Product', price: 10 });
+        if (createError) {
+          console.error('Error creating product:', createError);
+        }
       }
       console.log('Store created:', store);
-    } catch (error) {
-      console.error('Error creating store:', error);
     }
   };
 
   const getStores = async () => {
-    try {
-      const stores = await storeRepository.getAll();
-      console.log('Stores:', stores);
+    const { data: stores, error } = await storeRepository.getAll();
+    if (error) {
+      console.error('Error fetching stores:', error);
+      return;
+    }
 
+    console.log('Stores:', stores);
+
+    if (stores) {
       for (const store of stores) {
         const storeProductRepo = store.productsRepo;
         if (storeProductRepo) {
-          const products = await storeProductRepo.getAll();
-          console.log(`Products for store ${store.id}:`, products);
+          const { data: products, error: productsError } = await storeProductRepo.getAll();
+          if (productsError) {
+            console.error(`Error fetching products for store ${store.id}:`, productsError);
+          } else {
+            console.log(`Products for store ${store.id}:`, products);
+          }
         }
       }
-    } catch (error) {
-      console.error('Error fetching stores:', error);
     }
   };
 
   const getStoresQuery = async () => {
-    try {
-      const stores = await storeRepository.getAll({
-        where: { field: 'rating', operator: '>=', value: 9 },
-      });
-      console.log('Stores:', stores);
-
-      // for (const store of stores) {
-      //   const storeProductRepo = store.productsRepo;
-      //   if (storeProductRepo) {
-      //     const products = await storeProductRepo.getAll();
-      //     console.log(`Products for store ${store.id}:`, products);
-      //   }
-      // }
-    } catch (error) {
+    const { data: stores, error } = await storeRepository.getAll({
+      where: { field: 'rating', operator: '>=', value: 9 },
+    });
+    if (error) {
       console.error('Error fetching stores:', error);
+      return;
     }
+
+    console.log('Stores:', stores);
+
+    // for (const store of stores) {
+    //   const storeProductRepo = store.productsRepo;
+    //   if (storeProductRepo) {
+    //     const products = await storeProductRepo.getAll();
+    //     console.log(`Products for store ${store.id}:`, products);
+    //   }
+    // }
   };
 
   return (
