@@ -5,8 +5,12 @@ export default function RootLayout() {
     <main>
       <nav>
         <ul>
-          <li><a href="/">Go to Home</a></li>
-          <li><a href="/store">Go to Store</a></li>
+          <li>
+            <a href="/">Go to Home</a>
+          </li>
+          <li>
+            <a href="/store">Go to Store</a>
+          </li>
         </ul>
       </nav>
       <Outlet />

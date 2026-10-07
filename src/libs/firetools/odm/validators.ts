@@ -10,11 +10,7 @@ export { ValidationError };
 /**
  * Validate a value against field metadata
  */
-export function validateField<T>(
-  fieldName: string,
-  value: T,
-  metadata: FieldMetadata
-): void {
+export function validateField<T>(fieldName: string, value: T, metadata: FieldMetadata): void {
   // Skip validation for undefined optional fields
   if (value === undefined && !metadata.required) {
     return;
@@ -92,7 +88,7 @@ function validateType(fieldName: string, value: any, type: string): void {
 export function validateObject(
   object: any,
   fieldsMetadata: Map<string, FieldMetadata>,
-  skipValidation = false
+  skipValidation = false,
 ): void {
   if (skipValidation) return;
 
@@ -179,11 +175,13 @@ export const Validators = {
   /**
    * Combine multiple validators (all must pass)
    */
-  all: (...validators: Array<(value: any) => string | null>) => (value: any) => {
-    for (const validator of validators) {
-      const error = validator(value);
-      if (error) return error;
-    }
-    return null;
-  },
+  all:
+    (...validators: Array<(value: any) => string | null>) =>
+    (value: any) => {
+      for (const validator of validators) {
+        const error = validator(value);
+        if (error) return error;
+      }
+      return null;
+    },
 };

@@ -20,11 +20,7 @@ import {
   type Query,
   Timestamp,
 } from 'firebase/firestore';
-import {
-  getModelFields,
-  getCollectionPath,
-  getModelSubCollections,
-} from './metadata';
+import { getModelFields, getCollectionPath, getModelSubCollections } from './metadata';
 import { validateObject } from './validators';
 import type { CreateInput, UpdateInput, CrudOptions, QueryOptions } from './types';
 
@@ -57,7 +53,7 @@ export class Repository<T> {
     db: Firestore,
     modelClass: new () => T,
     parentPath?: string,
-    isFullPath: boolean = false
+    isFullPath: boolean = false,
   ) {
     this.db = db;
     this.modelClass = modelClass;
@@ -256,7 +252,7 @@ export class Repository<T> {
     // Add where conditions
     if (options.where) {
       const conditions = Array.isArray(options.where) ? options.where : [options.where];
-      
+
       for (const condition of conditions) {
         const fieldName = String(condition.field);
         // ponytail: Firebase doesn't support OR in constraints directly; all are AND'd by Firestore
@@ -286,7 +282,7 @@ export class Repository<T> {
   async update(
     id: string,
     data: UpdateInput<T>,
-    options?: CrudOptions
+    options?: CrudOptions,
   ): Promise<Result<T & { id: string }>> {
     try {
       // Get existing document to merge
@@ -358,14 +354,14 @@ export class Repository<T> {
   getSubCollection<U>(
     documentId: string,
     collectionName: string,
-    subModelClass: new () => U
+    subModelClass: new () => U,
   ): Repository<U> {
     // Build the full path: parent/collection/documentId/subCollectionName
     const basePath = this.isFullPath
       ? this.parentPath
       : getCollectionPath(this.modelClass, this.parentPath);
     const fullPath = `${basePath}/${documentId}/${collectionName}`;
-    
+
     // Create repository with full path flag set to true so it uses the path as-is
     return new Repository<U>(this.db, subModelClass, fullPath, true);
   }
@@ -415,7 +411,11 @@ export class Repository<T> {
 
     for (const [propertyName, subCollectionMetadata] of subCollections) {
       const subModelClass = subCollectionMetadata.modelClass || this.modelClass;
-      const subRepo = this.getSubCollection(instance.id, subCollectionMetadata.collectionName, subModelClass);
+      const subRepo = this.getSubCollection(
+        instance.id,
+        subCollectionMetadata.collectionName,
+        subModelClass,
+      );
 
       // Attach the repository to the instance
       (instance as any)[propertyName] = subRepo;

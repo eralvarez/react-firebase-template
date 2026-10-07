@@ -43,11 +43,7 @@ export function isModel(target: any): boolean {
 /**
  * Set field metadata on a model
  */
-export function setFieldMetadata(
-  target: any,
-  fieldName: string,
-  metadata: FieldMetadata
-): void {
+export function setFieldMetadata(target: any, fieldName: string, metadata: FieldMetadata): void {
   let modelMetadata = modelMetadataMap.get(target);
 
   if (!modelMetadata) {
@@ -110,7 +106,7 @@ export function getCollectionName(target: any): string | undefined {
 export function setSubCollectionMetadata(
   target: any,
   propertyName: string,
-  metadata: SubCollectionMetadata
+  metadata: SubCollectionMetadata,
 ): void {
   let subCollections = subCollectionMetadataMap.get(target);
 
@@ -125,7 +121,10 @@ export function setSubCollectionMetadata(
 /**
  * Get sub-collection metadata
  */
-export function getSubCollectionMetadata(target: any, propertyName: string): SubCollectionMetadata | undefined {
+export function getSubCollectionMetadata(
+  target: any,
+  propertyName: string,
+): SubCollectionMetadata | undefined {
   const subCollections = subCollectionMetadataMap.get(target);
   return subCollections?.get(propertyName);
 }

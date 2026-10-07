@@ -68,7 +68,7 @@ export const userRepository = new Repository<User>(db, User);
 const user = await userRepository.create({
   name: 'John Doe',
   email: 'john@example.com',
-  age: 30
+  age: 30,
 });
 
 // Read
@@ -76,7 +76,7 @@ const fetchedUser = await userRepository.get(user.id);
 
 // Update
 const updated = await userRepository.update(user.id, {
-  age: 31
+  age: 31,
 });
 
 // Delete
@@ -133,15 +133,15 @@ createdAt?: Date;
 
 #### Field Options
 
-| Option | Type | Description |
-|--------|------|-------------|
-| `type` | `FieldType` | Field type: 'string', 'number', 'boolean', 'timestamp', 'object', 'array' |
-| `required` | `boolean` | Whether field is required (default: false) |
-| `readonly` | `boolean` | Cannot be updated after creation (except auto: true fields) |
-| `auto` | `boolean` | Automatically managed (timestamps only) |
-| `validate` | `ValidatorFn` | Custom validation function |
-| `default` | `any` | Default value |
-| `description` | `string` | Field documentation |
+| Option        | Type          | Description                                                               |
+| ------------- | ------------- | ------------------------------------------------------------------------- |
+| `type`        | `FieldType`   | Field type: 'string', 'number', 'boolean', 'timestamp', 'object', 'array' |
+| `required`    | `boolean`     | Whether field is required (default: false)                                |
+| `readonly`    | `boolean`     | Cannot be updated after creation (except auto: true fields)               |
+| `auto`        | `boolean`     | Automatically managed (timestamps only)                                   |
+| `validate`    | `ValidatorFn` | Custom validation function                                                |
+| `default`     | `any`         | Default value                                                             |
+| `description` | `string`      | Field documentation                                                       |
 
 ### Field Types
 
@@ -196,7 +196,7 @@ Create a new document with automatic validation.
 const product = await productRepository.create({
   name: 'Laptop',
   price: 999.99,
-  stock: 5
+  stock: 5,
 });
 
 console.log(product.id); // Auto-generated Firestore document ID
@@ -217,7 +217,7 @@ const product = await productRepository.get('product-id');
 const products = await productRepository.getAll();
 
 // Iterate over results
-products.forEach(p => {
+products.forEach((p) => {
   console.log(p.name, p.price);
 });
 ```
@@ -233,7 +233,7 @@ console.log(product.createdAt.toISOString()); // "2024-01-15T10:30:00.000Z"
 
 // Works with getAll() too
 const products = await productRepository.getAll();
-products.forEach(p => {
+products.forEach((p) => {
   console.log(p.updatedAt instanceof Date); // true
 });
 ```
@@ -245,15 +245,15 @@ Query documents with type-safe filters, ordering, and pagination:
 ```typescript
 // Single filter
 const openStores = await storeRepository.getAll({
-  where: { field: 'isOpen', operator: '==', value: true }
+  where: { field: 'isOpen', operator: '==', value: true },
 });
 
 // Multiple filters (combined with AND by default)
 const highRatedOpenStores = await storeRepository.getAll({
   where: [
     { field: 'isOpen', operator: '==', value: true },
-    { field: 'rating', operator: '>=', value: 4.5 }
-  ]
+    { field: 'rating', operator: '>=', value: 4.5 },
+  ],
 });
 
 // Add ordering
@@ -261,19 +261,20 @@ const sortedStores = await storeRepository.getAll({
   where: { field: 'isOpen', operator: '==', value: true },
   orderBy: [
     { field: 'rating', direction: 'desc' },
-    { field: 'name', direction: 'asc' }
-  ]
+    { field: 'name', direction: 'asc' },
+  ],
 });
 
 // Add limit (pagination)
 const page1 = await storeRepository.getAll({
   orderBy: [{ field: 'createdAt', direction: 'desc' }],
-  limit: 10
+  limit: 10,
 });
 ```
 
 **QueryOptions properties:**
-- `where` — Single condition or array of conditions. Each condition has `field`, `operator`, and `value`. 
+
+- `where` — Single condition or array of conditions. Each condition has `field`, `operator`, and `value`.
 - `orderBy` — Array of `{ field, direction: 'asc' | 'desc' }`. Applied in order.
 - `limit` — Maximum number of documents to return.
 - `combineWithAnd` — (Optional, defaults to `true`) When `true`, multiple `where` conditions are AND'd. When `false`, client-side filtering is used for OR logic (not native Firestore OR).
@@ -291,7 +292,7 @@ Update specific fields in a document.
 ```typescript
 const updated = await productRepository.update('product-id', {
   price: 799.99,
-  stock: 3
+  stock: 3,
 });
 
 console.log(updated.updatedAt); // New timestamp
@@ -428,7 +429,7 @@ import { ValidationError } from '@/libs/odm';
 try {
   await productRepository.create({
     name: 'Invalid Product',
-    price: -100 // Invalid!
+    price: -100, // Invalid!
   });
 } catch (error) {
   if (error instanceof ValidationError) {
@@ -491,13 +492,13 @@ if (productsRepo) {
   // All CRUD operations work on sub-collections
   const product = await productsRepo.create({
     name: 'Widget',
-    price: 19.99
+    price: 19.99,
   });
 
   const allProducts = await productsRepo.getAll();
 
   const updated = await productsRepo.update(product.id, {
-    price: 29.99
+    price: 29.99,
   });
 
   await productsRepo.delete(product.id);
@@ -509,7 +510,7 @@ if (productsRepo) {
 ```typescript
 // 1. Create a store
 const store = await storeRepository.create({
-  name: 'Electronics Hub'
+  name: 'Electronics Hub',
 });
 
 // 2. Add products to the store
@@ -517,12 +518,12 @@ const productsRepo = store.products;
 if (productsRepo) {
   const laptop = await productsRepo.create({
     name: 'MacBook Pro',
-    price: 1999.99
+    price: 1999.99,
   });
 
   const mouse = await productsRepo.create({
     name: 'Magic Mouse',
-    price: 79.99
+    price: 79.99,
   });
 
   // 3. Get all products for this store
@@ -531,7 +532,7 @@ if (productsRepo) {
 
   // 4. Update a product
   const updated = await productsRepo.update(laptop.id, {
-    price: 1899.99
+    price: 1899.99,
   });
 
   // 5. Delete a product
@@ -544,7 +545,7 @@ if (productsRepo) {
 
 // 7. Update the store
 const updatedStore = await storeRepository.update(store.id!, {
-  description: 'Premium electronics only'
+  description: 'Premium electronics only',
 });
 
 // 8. Delete the store (sub-collections must be deleted separately in Firestore)
@@ -559,12 +560,12 @@ await storeRepository.delete(store.id!);
 // Create and immediately update
 const product = await productRepository.create({
   name: 'New Product',
-  price: 0
+  price: 0,
 });
 
 const updated = await productRepository.update(product.id, {
   price: 99.99,
-  stock: 10
+  stock: 10,
 });
 
 // Fetch and verify
@@ -580,16 +581,16 @@ Process multiple documents:
 const allProducts = await productRepository.getAll();
 
 // Filter
-const expensive = allProducts.filter(p => p.price > 1000);
+const expensive = allProducts.filter((p) => p.price > 1000);
 
 // Map
-const names = allProducts.map(p => p.name);
+const names = allProducts.map((p) => p.name);
 
 // Update multiple (sequential)
 for (const product of allProducts) {
   if (product.price > 1000) {
     await productRepository.update(product.id, {
-      discounted: true
+      discounted: true,
     });
   }
 }
@@ -696,14 +697,14 @@ new Repository<T>(db: Firestore, modelClass: new () => T, parentPath?: string)
 
 #### Methods
 
-| Method | Returns | Description |
-|--------|---------|-------------|
-| `create(data, options?)` | `Promise<T & { id }>` | Create new document |
-| `get(id)` | `Promise<T & { id } \| null>` | Fetch single document |
-| `getAll(options?)` | `Promise<(T & { id })[]>` | Fetch documents with optional filtering, ordering, and limit |
-| `update(id, data, options?)` | `Promise<T & { id }>` | Update document fields |
-| `delete(id)` | `Promise<void>` | Delete document |
-| `getSubCollection<U>(id, name, modelClass)` | `Repository<U>` | Access sub-collection |
+| Method                                      | Returns                       | Description                                                  |
+| ------------------------------------------- | ----------------------------- | ------------------------------------------------------------ |
+| `create(data, options?)`                    | `Promise<T & { id }>`         | Create new document                                          |
+| `get(id)`                                   | `Promise<T & { id } \| null>` | Fetch single document                                        |
+| `getAll(options?)`                          | `Promise<(T & { id })[]>`     | Fetch documents with optional filtering, ordering, and limit |
+| `update(id, data, options?)`                | `Promise<T & { id }>`         | Update document fields                                       |
+| `delete(id)`                                | `Promise<void>`               | Delete document                                              |
+| `getSubCollection<U>(id, name, modelClass)` | `Repository<U>`               | Access sub-collection                                        |
 
 #### getAll Options
 
@@ -712,7 +713,7 @@ The `getAll()` method accepts an optional `QueryOptions<T>` parameter:
 ```typescript
 interface QueryOptions<T> {
   where?: WhereCondition<T> | WhereCondition<T>[];
-  combineWithAnd?: boolean;     // Default: true
+  combineWithAnd?: boolean; // Default: true
   orderBy?: Array<{
     field: keyof T;
     direction: 'asc' | 'desc';
@@ -726,21 +727,19 @@ interface WhereCondition<T> {
   value: any;
 }
 
-type FirestoreOperator = 
-  | '==' | '<' | '>' | '<=' | '>=' | '!='
-  | 'in' | 'array-contains';
+type FirestoreOperator = '==' | '<' | '>' | '<=' | '>=' | '!=' | 'in' | 'array-contains';
 ```
 
 ### Decorators
 
-| Decorator | Parameters | Usage |
-|-----------|-----------|-------|
-| `@Model` | - | Mark class as model |
-| `@Collection(name)` | `name: string` | Set collection name |
-| `@Field(options)` | `options: FieldMetadata` | Mark and configure field |
-| `@SubCollection(name, modelClass?)` | `name: string` | Declare sub-collection |
-| `@Required` | - | Mark field as required |
-| `@ReadOnly` | - | Mark field as read-only |
+| Decorator                           | Parameters               | Usage                    |
+| ----------------------------------- | ------------------------ | ------------------------ |
+| `@Model`                            | -                        | Mark class as model      |
+| `@Collection(name)`                 | `name: string`           | Set collection name      |
+| `@Field(options)`                   | `options: FieldMetadata` | Mark and configure field |
+| `@SubCollection(name, modelClass?)` | `name: string`           | Declare sub-collection   |
+| `@Required`                         | -                        | Mark field as required   |
+| `@ReadOnly`                         | -                        | Mark field as read-only  |
 
 ### Validators
 
@@ -793,6 +792,7 @@ const validated = validateObject(data, fields);
 ## Support
 
 For issues or questions about the ODM, check:
+
 - This README
 - The example files in the parent directory
 - The implementation in the source files

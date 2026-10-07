@@ -3,11 +3,7 @@
  * These are used to define Firestore models with validation and metadata
  */
 
-import type {
-  FieldMetadata,
-  SubCollectionMetadata,
-  FieldType,
-} from './types';
+import type { FieldMetadata, SubCollectionMetadata, FieldType } from './types';
 import {
   setModelMetadata,
   setFieldMetadata,

@@ -6,7 +6,7 @@ import generouted from '@generouted/react-router/plugin';
 // https://vite.dev/config/
 export default defineConfig({
   resolve: {
-    tsconfigPaths: true
+    tsconfigPaths: true,
   },
   plugins: [
     react(),

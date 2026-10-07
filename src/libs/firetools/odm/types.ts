@@ -160,16 +160,16 @@ export interface WhereCondition<T> {
 export interface QueryOptions<T> {
   /** Where conditions: single condition or array of conditions */
   where?: WhereCondition<T> | WhereCondition<T>[];
-  
+
   /** Combine multiple where conditions with AND (true) or OR (false). Default: true */
   combineWithAnd?: boolean;
-  
+
   /** Order by field and direction */
   orderBy?: Array<{
     field: keyof T;
     direction: 'asc' | 'desc';
   }>;
-  
+
   /** Maximum number of documents to return */
   limit?: number;
 }

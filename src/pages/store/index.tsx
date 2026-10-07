@@ -13,7 +13,10 @@ export default function StoreHome() {
 
       if (productRepo) {
         // You can now use the product repository to create products
-        const { error: createError } = await productRepo.create({ name: 'Sample Product', price: 10 });
+        const { error: createError } = await productRepo.create({
+          name: 'Sample Product',
+          price: 10,
+        });
         if (createError) {
           console.error('Error creating product:', createError);
         }

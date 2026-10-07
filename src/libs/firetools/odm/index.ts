@@ -4,7 +4,15 @@
  */
 
 // Core decorators
-export { Model, Collection, Field, SubCollection, Required, ReadOnly, FieldBuilder } from './decorators';
+export {
+  Model,
+  Collection,
+  Field,
+  SubCollection,
+  Required,
+  ReadOnly,
+  FieldBuilder,
+} from './decorators';
 
 // Core Repository
 export { Repository, createRepository, type Result } from './repository';
