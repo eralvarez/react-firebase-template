@@ -1,19 +1,29 @@
 import { Outlet } from 'react-router';
+import { ThemeProvider } from '@mui/material/styles';
+import theme from '../theme';
+import '@fontsource/roboto/300.css';
+import '@fontsource/roboto/400.css';
+import '@fontsource/roboto/500.css';
+import '@fontsource/roboto/700.css';
+import CssBaseline from '@mui/material/CssBaseline';
 
 export default function RootLayout() {
   return (
-    <main>
-      <nav>
-        <ul>
-          <li>
-            <a href="/">Go to Home</a>
-          </li>
-          <li>
-            <a href="/store">Go to Store</a>
-          </li>
-        </ul>
-      </nav>
-      <Outlet />
-    </main>
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <main>
+        <nav>
+          <ul>
+            <li>
+              <a href="/">Go to Home</a>
+            </li>
+            <li>
+              <a href="/store">Go to Store</a>
+            </li>
+          </ul>
+        </nav>
+        <Outlet />
+      </main>
+    </ThemeProvider>
   );
 }
