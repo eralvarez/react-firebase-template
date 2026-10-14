@@ -2,6 +2,7 @@
 import { initializeApp } from 'firebase/app';
 import { getAnalytics } from 'firebase/analytics';
 import { getFirestore } from 'firebase/firestore';
+import { getRemoteConfig } from "firebase/remote-config";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -21,5 +22,12 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
 const db = getFirestore(app);
+const remoteConfig = getRemoteConfig(app);
 
-export { app, analytics, db };
+remoteConfig.settings.minimumFetchIntervalMillis = 2 * 1000;
+
+remoteConfig.defaultConfig = {
+  "isPageEnabled": false
+};
+
+export { app, analytics, db, remoteConfig };
