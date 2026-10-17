@@ -9,7 +9,7 @@ export default function StoreHome() {
     }
 
     if (store) {
-      const productRepo = store.productsRepo;
+      const productRepo = store.productsRepository;
 
       if (productRepo) {
         // You can now use the product repository to create products
@@ -36,7 +36,7 @@ export default function StoreHome() {
 
     if (stores) {
       for (const store of stores) {
-        const storeProductRepo = store.productsRepo;
+        const storeProductRepo = store.productsRepository;
         if (storeProductRepo) {
           const { data: products, error: productsError } = await storeProductRepo.getAll();
           if (productsError) {

@@ -34,7 +34,7 @@ export class Store {
   updatedAt?: Date;
 
   @SubCollection('products')
-  productsRepo?: Repository<Product>;
+  productsRepository?: Repository<Product>;
 }
 
 @Model
