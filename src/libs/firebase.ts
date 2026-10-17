@@ -1,8 +1,9 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from 'firebase/app';
 import { getAnalytics } from 'firebase/analytics';
+import { getAuth, GoogleAuthProvider } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
-import { getRemoteConfig } from "firebase/remote-config";
+import { getRemoteConfig } from 'firebase/remote-config';
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -21,13 +22,17 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
+const auth = getAuth(app);
 const db = getFirestore(app);
 const remoteConfig = getRemoteConfig(app);
+const googleProvider = new GoogleAuthProvider();
+
+googleProvider.setCustomParameters({ prompt: 'select_account' });
 
 remoteConfig.settings.minimumFetchIntervalMillis = 2 * 1000;
 
 remoteConfig.defaultConfig = {
-  "isPageEnabled": false
+  isPageEnabled: false,
 };
 
-export { app, analytics, db, remoteConfig };
+export { app, analytics, auth, db, remoteConfig, googleProvider };

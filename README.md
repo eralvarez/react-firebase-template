@@ -48,7 +48,29 @@ export default defineConfig([
 
 You can also install [eslint-plugin-react-x](https://npmx.dev/package/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://npmx.dev/package/eslint-plugin-react-dom) for React-specific lint rules:
 
-```js
+```
+
+## Firebase Authentication (Client-side)
+
+This project includes client-side Firebase Authentication with:
+
+- Email/password sign up + sign in
+- Google sign in (popup flow)
+- Email verification flow for email/password users
+- Protected `/admin` route with redirect to `/signin`
+
+### Current behavior
+
+- Unauthenticated users trying to access `/admin` are redirected to `/signin?redirect=/admin`.
+- Signed-in but unverified email/password users are redirected to `/signin` and can resend verification email.
+- Verified users are redirected away from `/signin` and `/signup` to `/admin`.
+- User profile data is persisted through the ODM repository in the `users` collection with:
+  - `uid`
+  - `email`
+  - `displayName`
+  - `provider`
+  - `createdAt`
+  - `updatedAt`js
 // eslint.config.js
 import reactX from 'eslint-plugin-react-x';
 import reactDom from 'eslint-plugin-react-dom';

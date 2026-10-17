@@ -1,4 +1,9 @@
 import { storeRepository } from 'libs/db';
+import Button from '@mui/material/Button';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import Stack from '@mui/material/Stack';
+import Typography from '@mui/material/Typography';
 
 export default function StoreHome() {
   const handleCreateStore = async () => {
@@ -70,19 +75,25 @@ export default function StoreHome() {
   };
 
   return (
-    <>
-      <h1>Store</h1>
-      <p>Welcome to the store page!</p>
+    <Card variant="outlined">
+      <CardContent>
+        <Stack spacing={2}>
+          <Typography variant="h4">Store</Typography>
+          <Typography variant="body1">Welcome to the store page!</Typography>
 
-      <button type="button" onClick={handleCreateStore}>
-        Click me
-      </button>
-      <button type="button" onClick={getStores}>
-        Get Stores
-      </button>
-      <button type="button" onClick={getStoresQuery}>
-        Get Stores query
-      </button>
-    </>
+          <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1}>
+            <Button type="button" variant="contained" onClick={handleCreateStore}>
+              Create store
+            </Button>
+            <Button type="button" variant="outlined" onClick={getStores}>
+              Get stores
+            </Button>
+            <Button type="button" variant="outlined" onClick={getStoresQuery}>
+              Query stores
+            </Button>
+          </Stack>
+        </Stack>
+      </CardContent>
+    </Card>
   );
 }

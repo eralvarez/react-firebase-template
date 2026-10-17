@@ -38,6 +38,30 @@ export class Store {
 }
 
 @Model
+@Collection('users')
+export class UserProfile {
+  id?: string;
+
+  @Field({ required: true })
+  uid: string = '';
+
+  @Field({ required: true })
+  email: string = '';
+
+  @Field()
+  displayName?: string = '';
+
+  @Field({ required: true, type: 'string', default: 'password' })
+  provider: string = 'password';
+
+  @Field({ type: 'timestamp', readonly: true, auto: true })
+  createdAt?: Date;
+
+  @Field({ type: 'timestamp', readonly: true, auto: true })
+  updatedAt?: Date;
+}
+
+@Model
 class Product {
   id?: string;
 
@@ -66,3 +90,4 @@ class Product {
 // ============================================================================
 
 export const storeRepository = new Repository<Store>(db, Store);
+export const userRepository = new Repository<UserProfile>(db, UserProfile);
