@@ -16,7 +16,8 @@ import CssBaseline from '@mui/material/CssBaseline';
 import Stack from '@mui/material/Stack';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import { AuthProvider, useAuth } from 'components';
+
+import { AuthProvider, useAuth, ReloadPrompt } from 'components';
 import { signOutUser } from 'libs/auth';
 
 export default function RootLayout() {
@@ -96,6 +97,7 @@ function AppShell() {
             {signOutError}
           </Alert>
         ) : null}
+        <ReloadPrompt />
         <Outlet />
       </Container>
     </Box>
