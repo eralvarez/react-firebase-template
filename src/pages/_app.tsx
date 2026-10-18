@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Outlet, useLocation } from 'react-router';
+import { Link as RouterLink, Outlet, useLocation } from 'react-router';
 import { ThemeProvider } from '@mui/material/styles';
 import AppBar from '@mui/material/AppBar';
 import Alert from '@mui/material/Alert';
@@ -60,14 +60,14 @@ function AppShell() {
                 sx={{ justifyContent: 'space-between' }}
               >
                 <Stack direction="row" spacing={1}>
-                  <Button variant="text" href="/">
+                  <Button component={RouterLink} to="/" variant="text">
                     Home
                   </Button>
-                  <Button variant="text" href="/store">
+                  <Button component={RouterLink} to="/store" variant="text">
                     Store
                   </Button>
                   {user ? (
-                    <Button variant="text" href="/admin">
+                    <Button component={RouterLink} to="/admin" variant="text">
                       Admin
                     </Button>
                   ) : null}
@@ -87,10 +87,15 @@ function AppShell() {
                     </>
                   ) : (
                     <>
-                      <Button variant="outlined" color="inherit" href="/signin">
+                      <Button
+                        component={RouterLink}
+                        to="/signin"
+                        variant="outlined"
+                        color="inherit"
+                      >
                         Sign in
                       </Button>
-                      <Button variant="contained" href="/signup">
+                      <Button component={RouterLink} to="/signup" variant="contained">
                         Sign up
                       </Button>
                     </>
