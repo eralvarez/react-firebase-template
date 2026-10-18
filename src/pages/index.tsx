@@ -9,7 +9,7 @@ export default function Home() {
     <Card variant="outlined">
       <CardContent>
         <Stack spacing={2}>
-          <Typography variant="h4">Home 3</Typography>
+          <Typography variant="h4">Home</Typography>
           <Typography variant="body1">Welcome to the home page!</Typography>
           <Button variant="contained" href="/signin">
             Go to Sign in

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Outlet } from 'react-router';
+import { Outlet, useLocation } from 'react-router';
 import { ThemeProvider } from '@mui/material/styles';
 import AppBar from '@mui/material/AppBar';
 import Alert from '@mui/material/Alert';
@@ -33,7 +33,9 @@ export default function RootLayout() {
 
 function AppShell() {
   const { user, isEmailVerified } = useAuth();
+  const { pathname } = useLocation();
   const [signOutError, setSignOutError] = useState<string>('');
+  const isAdminRoute = pathname === '/admin' || pathname.startsWith('/admin/');
 
   const handleSignOut = async () => {
     setSignOutError('');
@@ -48,58 +50,73 @@ function AppShell() {
 
   return (
     <Box sx={{ minHeight: '100vh', backgroundColor: 'background.default' }}>
-      <AppBar position="static" color="transparent">
-        <Toolbar>
-          <Container maxWidth="lg" disableGutters>
-            <Stack direction={{ xs: 'column', md: 'row' }} spacing={2} sx={{ justifyContent: 'space-between' }}>
-              <Stack direction="row" spacing={1}>
-                <Button variant="text" href="/">
-                  Home
-                </Button>
-                <Button variant="text" href="/store">
-                  Store
-                </Button>
-                {user ? (
-                  <Button variant="text" href="/admin">
-                    Admin
+      {!isAdminRoute ? (
+        <AppBar position="static" color="transparent">
+          <Toolbar>
+            <Container maxWidth="lg" disableGutters>
+              <Stack
+                direction={{ xs: 'column', md: 'row' }}
+                spacing={2}
+                sx={{ justifyContent: 'space-between' }}
+              >
+                <Stack direction="row" spacing={1}>
+                  <Button variant="text" href="/">
+                    Home
                   </Button>
-                ) : null}
+                  <Button variant="text" href="/store">
+                    Store
+                  </Button>
+                  {user ? (
+                    <Button variant="text" href="/admin">
+                      Admin
+                    </Button>
+                  ) : null}
+                </Stack>
+                <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
+                  {user ? (
+                    <>
+                      <Typography variant="body2" color="text.secondary">
+                        {user.displayName || user.email}
+                      </Typography>
+                      {!isEmailVerified ? (
+                        <Chip size="small" label="Email not verified" color="warning" />
+                      ) : null}
+                      <Button variant="outlined" color="inherit" onClick={handleSignOut}>
+                        Sign out
+                      </Button>
+                    </>
+                  ) : (
+                    <>
+                      <Button variant="outlined" color="inherit" href="/signin">
+                        Sign in
+                      </Button>
+                      <Button variant="contained" href="/signup">
+                        Sign up
+                      </Button>
+                    </>
+                  )}
+                </Stack>
               </Stack>
-              <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
-                {user ? (
-                  <>
-                    <Typography variant="body2" color="text.secondary">
-                      {user.displayName || user.email}
-                    </Typography>
-                    {!isEmailVerified ? <Chip size="small" label="Email not verified" color="warning" /> : null}
-                    <Button variant="outlined" color="inherit" onClick={handleSignOut}>
-                      Sign out
-                    </Button>
-                  </>
-                ) : (
-                  <>
-                    <Button variant="outlined" color="inherit" href="/signin">
-                      Sign in
-                    </Button>
-                    <Button variant="contained" href="/signup">
-                      Sign up
-                    </Button>
-                  </>
-                )}
-              </Stack>
-            </Stack>
-          </Container>
-        </Toolbar>
-      </AppBar>
-      <Container component="main" maxWidth="lg" sx={{ py: 4 }}>
-        {signOutError ? (
-          <Alert severity="error" sx={{ mb: 2 }}>
-            {signOutError}
-          </Alert>
-        ) : null}
-        <ReloadPrompt />
-        <Outlet />
-      </Container>
+            </Container>
+          </Toolbar>
+        </AppBar>
+      ) : null}
+      {isAdminRoute ? (
+        <Box component="main" sx={{ minHeight: '100vh' }}>
+          <ReloadPrompt />
+          <Outlet />
+        </Box>
+      ) : (
+        <Container component="main" maxWidth="lg" sx={{ py: 4 }}>
+          {signOutError ? (
+            <Alert severity="error" sx={{ mb: 2 }}>
+              {signOutError}
+            </Alert>
+          ) : null}
+          <ReloadPrompt />
+          <Outlet />
+        </Container>
+      )}
     </Box>
   );
 }
